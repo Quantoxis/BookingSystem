@@ -7,15 +7,13 @@ package bookingsystem2;
 
 import java.awt.Dimension;
 import java.awt.TextField;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -107,31 +105,42 @@ public class AddNewLaptop extends JPanel implements ActionListener {
             System.out.println(l.getOS());
             System.out.println(l.getNoDays());
             System.out.println(l.getId());
+            
             insertLaptopWithSQL();
+            
         }
     }
     
     public  void insertLaptopWithSQL()
     {
-        try (
+        
+        
+        
+        try {
             //create an object to connect to database
-            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3036/equipmentdb?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC", "myuser", "xxxx");
-            //create a statement object to send SQL to the mySQL db
-            Statement statement = connection.createStatement();) {
-            
-            
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/equipmentdb?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC", "myuser", "xxxx");
+        String stringInsert = "INSERT INTO equipmentdb VALUES (?,?,?)";
+//create a statement object to send SQL to the mySQL db
+            //PreparedStatement statement = connection.prepareStatement(l.getOS()+","+l.getNoDays()+","+l.getId()); 
+PreparedStatement statement = connection.prepareStatement(stringInsert);
+statement.setString(1, l.getOS());
+statement.setInt(2, l.getNoDays());
+statement.setInt(3, l.getId());
+        
             //execute  a SQL INSERT query 
-            String stringInsert = "INSERT INTO equipmentdb VALUES ("+l.getOS()+","+l.getNoDays()+","+l.getId()+")";
-            ResultSet resultSet = statement.executeQuery(stringInsert);
+           statement.toString();
+            System.out.println(statement);
+            statement.executeUpdate();
+          
             System.out.println(stringInsert);
-            int rowCount = 0;
-            //moves cursor to next row or returns false if reached end
-            while (resultSet.next()) {
-                String os = resultSet.getString("os");
-                
-                System.out.println(os);
-                ++rowCount;
-            }
+//            int rowCount = 0;
+//            //moves cursor to next row or returns false if reached end
+//            while (resultSet.next()) {
+//                String os = resultSet.getString("os");
+//                
+//                System.out.println(os);
+//                ++rowCount;
+//            }
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
